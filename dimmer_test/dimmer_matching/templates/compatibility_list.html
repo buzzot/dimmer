@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compatibility List</title>
+</head>
+<body>
+    <h1>Dimmer Compatibility List</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Related Product</th>
+                <th>Related Dimmer</th>
+                <th>Min Luminaires</th>
+                <th>Max Luminaires</th>
+                <th>Min Dimming Percentage</th>
+                <th>Max Dimming Percentage</th>
+                <th>Low End Start Time</th>
+                <th>Visual Test</th>
+                <th>Comments</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for compatibility in compatibilities %}
+                <tr>
+                    <td>{{ compatibility.luminaire.product_name }}</td>
+                    <td>{{ compatibility.dimmer.brand }} {{ compatibility.dimmer.model }}</td>
+                    <td>{{ compatibility.min_luminaires }}</td>
+                    <td>{{ compatibility.max_luminaires }}</td>
+                    <td>{{ compatibility.min_dimming_percentage }}</td>
+                    <td>{{ compatibility.max_dimming_percentage }}</td>
+                    <td>{{ compatibility.low_end_start_time }}</td>
+                    <td>{{ compatibility.visual_test }}</td>
+                    <td>{{ compatibility.comments }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br>
+    <a href="{% url 'add_compatibility' luminaire_id=luminaire.id %}">Add Compatibility</a>
+</body>
+</html>

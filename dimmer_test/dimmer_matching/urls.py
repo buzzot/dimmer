@@ -1,0 +1,12 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.main_page, name='main_page'),  # Main page URL
+    path('add_compatibility/<int:luminaire_id>/', views.add_compatibility, name='add_compatibility'),
+    path('compatibility_list/', views.compatibility_list, name='compatibility_list'),
+    path('test_compatibility/<int:luminaire_id>/', views.test_compatibility, name='test_compatibility'),
+    path('add_compatibility/<int:luminaire_id>/', views.add_compatibility, name='add_compatibility'),
+    path('compatibility_result/<int:luminaire_id>/', views.compatibility_result, name='compatibility_result'),
+    # Add this line
+]

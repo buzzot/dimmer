@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Compatibility</title>
+</head>
+<body>
+    <h1>Add Compatibility for {{ luminaire.product_name }}</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save Compatibility</button>
+    </form>
+
+    <h2>Available Dimmers</h2>
+    <ul>
+        {% for dimmer in dimmers %}
+            <li>{{ dimmer.brand }} {{ dimmer.model }} ({{ dimmer.dimming_protocol }}) - <a href="{{ dimmer.manufacturer_url }}" target="_blank">Manufacturer</a></li>
+        {% endfor %}
+    </ul>
+
+    <br>
+    <a href="{% url 'compatibility_list' %}">Back to Compatibility List</a>
+</body>
+</html>

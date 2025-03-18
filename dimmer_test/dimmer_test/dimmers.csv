@@ -1,0 +1,15 @@
+Number,Manufacturer,Series,Dimmer Model,Manufacturer Link,Dimming Protocol,Max Power
+1,Lutron,DVCL Series,DVCL-253P,https://www.lutron.com/en-US/products/pages/dimmers/dvcl-253p,Triac,150
+2,Lutron,DVCL Series,DVCL-153P,https://www.lutron.com/en-US/products/pages/dimmers/dvcl-153p,Triac,150
+3,Lutron,CTCL Series,CTCL-153P,https://www.lutron.com/en-US/products/pages/dimmers/ctcl-153p,ELV,150
+4,Lutron,SCL Series,SCL-153P,https://www.lutron.com/en-US/products/pages/dimmers/scl-153p,ELV,150
+5,Lutron,AYCL Series,AYCL-153P,https://www.lutron.com/en-US/products/pages/dimmers/aycl-153p,Triac,150
+6,Lutron,AYCL Series,AYCL-253P,https://www.lutron.com/en-US/products/pages/dimmers/aycl-253p,Triac,150
+7,Lutron,NTCL Series,NTCL-250,https://www.lutron.com/en-US/products/pages/dimmers/ntcl-250,0-10V,150
+8,Lutron,RCL Series,RCL-153PNL,https://www.lutron.com/en-US/products/pages/dimmers/rcl-153pnl,0-10V,150
+9,Lutron,PD Series,PD-6WCL,https://www.lutron.com/en-US/products/pages/dimmers/pd-6wcl,0-10V,150
+10,Lutron,PD Series,PD-10NXD,https://www.lutron.com/en-US/products/pages/dimmers/pd-10nxd,0-10V,150
+11,Lutron,MACL Series,MACL-153M,https://www.lutron.com/en-US/products/pages/dimmers/macl-153m,ELV,150
+12,Lutron,MACL Series,MACL-LFQ,https://www.lutron.com/en-US/products/pages/dimmers/macl-lfq,ELV,150
+13,Lutron,MSCL Series,MSCL-OP153M,https://www.lutron.com/en-US/products/pages/dimmers/mscl-op153m,Triac,150
+14,Lutron,STCL Series,STCL-153PR,https://www.lutron.com/en-US/products/pages/dimmers/stcl-153pr,Triac,150
