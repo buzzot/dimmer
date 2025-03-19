@@ -30,7 +30,7 @@ class Dimmer(models.Model):
     brand = models.CharField(max_length=255)
     series = models.CharField(max_length=255)
     model = models.CharField(max_length=255)
-    dimming_protocol = models.CharField(max_length=100, choices=[
+    dimming_protocol = models.CharField(max_length=200, choices=[
         ('ELV', 'ELV'),
         ('Triac', 'Triac'),
         ('0-10V', '0-10V')

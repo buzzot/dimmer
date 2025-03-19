@@ -8,5 +8,8 @@ urlpatterns = [
     path('test_compatibility/<int:luminaire_id>/', views.test_compatibility, name='test_compatibility'),
     path('add_compatibility/<int:luminaire_id>/', views.add_compatibility, name='add_compatibility'),
     path('compatibility_result/<int:luminaire_id>/', views.compatibility_result, name='compatibility_result'),
+    path('add_compatibility/<int:luminaire_id>/', views.add_compatibility, name='add_compatibility'),
+    path('luminaire/<int:luminaire_id>/dimmers/', views.luminaire_dimmers, name='luminaire_dimmers'),
+    path('luminaires/', views.luminaire_list_with_dimmers, name='luminaire_list_with_dimmers'),
     # Add this line
 ]

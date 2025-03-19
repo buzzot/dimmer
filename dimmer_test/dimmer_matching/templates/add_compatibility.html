@@ -3,25 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Compatibility</title>
+    <title>Add Compatibility for {{ luminaire.product_name }}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Add Compatibility for {{ luminaire.product_name }}</h1>
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Add Compatibility for {{ luminaire.product_name }}</h1>
 
     <form method="POST">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Save Compatibility</button>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Dimmer Brand</th>
+                    <th>Dimmer Model</th>
+                    <th>Min Luminaires (Luminaire)</th>
+                    <th>Max Luminaires (Luminaire)</th>
+                    <th>Min Dimming Percentage (Luminaire)</th>
+                    <th>Max Dimming Percentage (Luminaire)</th>
+                    <th>Low End Start Time (Luminaire)</th>
+                    <th>Visual Test (Luminaire)</th>
+                    <th>Criteria Passed</th>
+                    <th>Comments</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dimmer, form in form_list %}
+                    <tr>
+                        <td>{{ dimmer.brand }} {{ dimmer.model }}</td>
+                        <td>{{ dimmer.model }}</td>
+                        <td>{{ form.luminaire_min_luminaires.value }}</td>
+                        <td>{{ form.luminaire_max_luminaires.value }}</td>
+                        <td>{{ form.luminaire_min_dimming_percentage.value }}</td>
+                        <td>{{ form.luminaire_max_dimming_percentage.value }}</td>
+                        <td>{{ form.luminaire_low_end_start_time.value }}</td>
+                        <td>{{ form.luminaire_visual_test.value }}</td>
+                        <td>{{ form.min_luminaires_passed }} {{ form.max_luminaires_passed }}</td>
+                        <td>{{ form.comments }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <button type="submit" class="btn btn-primary">Save Compatibility</button>
     </form>
 
-    <h2>Available Dimmers</h2>
-    <ul>
-        {% for dimmer in dimmers %}
-            <li>{{ dimmer.brand }} {{ dimmer.model }} ({{ dimmer.dimming_protocol }}) - <a href="{{ dimmer.manufacturer_url }}" target="_blank">Manufacturer</a></li>
-        {% endfor %}
-    </ul>
-
     <br>
-    <a href="{% url 'compatibility_list' %}">Back to Compatibility List</a>
+    <a href="{% url 'luminaire_list_with_dimmers' %}" class="btn btn-secondary">Back to Luminaires List</a>
+</div>
+
+<!-- Bootstrap JS and Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
 </body>
 </html>
