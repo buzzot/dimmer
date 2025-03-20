@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Dimmer</title>
+</head>
+<body>
+    <h1>Select Dimmer for {{ selected_luminaire.product_name }}</h1>
+    <form method="POST">
+    {% csrf_token %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Dimmer Brand</th>
+                <th>Dimmer Model</th>
+                <th>Number of Luminaries</th>
+                <!-- Other fields like max_lux, min_lux, etc. -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for dimmer in compatible_dimmers %}
+                <tr>
+                    <td>{{ dimmer.brand }} {{ dimmer.model }}</td>
+                    <td>{{ dimmer.model }}</td>
+                    <td><input type="number" name="number_of_luminaries_{{ dimmer.id }}" required></td>
+                    <!-- Add inputs for other fields like max_lux, min_lux, issue tests, etc. -->
+                </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    <button type="submit" class="btn btn-primary">Start Test</button>
+    </form>
+</body>
+</html>

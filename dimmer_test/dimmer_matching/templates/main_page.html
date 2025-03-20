@@ -15,12 +15,14 @@
     <!-- Form to Add a New Luminaire -->
     <div class="card shadow-sm p-4 mb-4">
         <h2 class="mb-3">Add Luminaire</h2>
-        <form method="POST">
+        <form method="POST" class="row g-3">
             {% csrf_token %}
-            <div class="mb-3">
+            <div class="col-md-8">
                 {{ form.as_p }}
             </div>
-            <button type="submit" class="btn btn-primary">Add Luminaire</button>
+            <div class="col-md-4 d-flex align-items-center">
+                <button type="submit" class="btn btn-primary w-100">Add Luminaire</button>
+            </div>
         </form>
     </div>
 
@@ -28,46 +30,54 @@
     <div class="card shadow-sm p-4">
         <h2 class="mb-3">Existing Luminaires</h2>
         {% if luminaires %}
-            <table class="table table-striped table-bordered">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Product Name</th>
-                        <th>Dimming Protocol</th>
-                        <th>Manufacturer URL</th>
-                        <th>Created On</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for luminaire in luminaires %}
-                    <tr>
-                        <td><strong>{{ luminaire.product_name }}</strong></td>
-                        <td>{{ luminaire.dimming_protocol }}</td>
-                        <td>
-                            {% if luminaire.manufacturer_url %}
-                                <a href="{{ luminaire.manufacturer_url }}" target="_blank">View</a>
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td>{{ luminaire.creation_date }}</td>
-                        <td>
-                            <span class="badge {% if luminaire.status == 'Not Tested' %} bg-warning text-dark {% else %} bg-success {% endif %}">
-                                {{ luminaire.status }}
-                            </span>
-                        </td>
-                        <td>
-                            {% if luminaire.status == 'Not Tested' %}
-                                <a href="{% url 'add_compatibility' luminaire.id %}" class="btn btn-outline-primary btn-sm">Test Compatibility</a>
-                            {% else %}
-                                <a href="{% url 'compatibility_result' luminaire.id %}" class="btn btn-outline-success btn-sm">View Compatibility Result</a>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Dimming Protocol</th>
+                            <th>Manufacturer URL</th>
+                            <th>Created On</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for luminaire in luminaires %}
+                        <tr>
+                            <td><strong>{{ luminaire.product_name }}</strong></td>
+                            <td>{{ luminaire.dimming_protocol }}</td>
+                            <td>
+                                {% if luminaire.manufacturer_url %}
+                                    <a href="{{ luminaire.manufacturer_url }}" target="_blank" class="text-decoration-none">
+                                        <span class="badge bg-info">View</span>
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">N/A</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ luminaire.creation_date }}</td>
+                            <td>
+                                <span class="badge {% if luminaire.status == 'Not Tested' %} bg-warning text-dark {% else %} bg-success {% endif %}">
+                                    {{ luminaire.status }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if luminaire.status == 'Not Tested' %}
+                                    <a href="{% url 'add_compatibility' luminaire.id %}" class="btn btn-outline-primary btn-sm" title="Test Compatibility">
+                                        Test
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'compatibility_result' luminaire.id %}" class="btn btn-outline-success btn-sm" title="View Compatibility Result">
+                                        View Result
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% else %}
             <p class="text-muted">No luminaires added yet.</p>
         {% endif %}

@@ -14,11 +14,16 @@
 
     {% if compatible_dimmers %}
         <table class="table table-bordered table-striped">
-            <thead>
+            <thead class="table-dark">
                 <tr>
                     <th>Dimmer Brand</th>
                     <th>Dimmer Model</th>
                     <th>Dimming Protocol</th>
+                    <th>Minimum Luminaires</th>
+                    <th>Maximum Luminaires</th>
+                    <th>Min Dimming Percentage</th>
+                    <th>Max Dimming Percentage</th>
+                    <th>Low End Start</th>
                     <th>Manufacturer URL</th>
                 </tr>
             </thead>
@@ -28,7 +33,18 @@
                     <td>{{ dimmer.brand }}</td>
                     <td>{{ dimmer.model }}</td>
                     <td>{{ dimmer.dimming_protocol }}</td>
-                    <td><a href="{{ dimmer.manufacturer_url }}" target="_blank">Manufacturer</a></td>
+                    <td>{{ dimmer.min_luminaires }}</td>
+                    <td>{{ dimmer.max_luminaires }}</td>
+                    <td>{{ dimmer.min_dimming_percentage }}%</td>
+                    <td>{{ dimmer.max_dimming_percentage }}%</td>
+                    <td>{{ dimmer.low_end_start }}</td>
+                    <td>
+                        {% if dimmer.manufacturer_url %}
+                            <a href="{{ dimmer.manufacturer_url }}" target="_blank">Manufacturer</a>
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
