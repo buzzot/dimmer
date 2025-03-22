@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Compatibility Result</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block content %}
+
     <h1>Compatibility Test Result for {{ luminaire.product_name }}</h1>
 
     <p>Status: {{ luminaire.status }}</p>
@@ -14,5 +10,4 @@
     <!-- Add additional details based on test results -->
 
     <a href="{% url 'main_page' %}"><button>Back to Main Page</button></a>
-</body>
-</html>
+{% endblock %}

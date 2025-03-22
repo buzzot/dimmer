@@ -33,11 +33,13 @@ class LuminaireForm(forms.ModelForm):
         from django import forms
         from .models import DimmerTest
 
+from django import forms
+from .models import DimmerTest
+
 class DimmerTestForm(forms.ModelForm):
-     class Meta:
+    class Meta:
         model = DimmerTest
-        fields = [
-                    'luminaire', 'dimmer', 'luminaire_production_date', 'light_level',
-                    'max_lux', 'min_lux', 'visual_flicker', 'ghosting', 'turnon_time',
-                    'popon_light', 'popcorn', 'dimmer_noise', 'fixture_noise', 'breaker_noise'
-                ]
+        fields = ['luminaire', 'dimmer', 'luminaire_production_date', 'light_level',
+                  'number_of_luminaries', 'max_lux', 'min_lux', 'visual_flicker',
+                  'ghosting', 'turnon_time', 'popon_light', 'popcorn',
+                  'dimmer_noise', 'fixture_noise', 'breaker_noise']

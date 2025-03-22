@@ -12,5 +12,6 @@ urlpatterns = [
     path('luminaire/<int:luminaire_id>/dimmers/', views.luminaire_dimmers, name='luminaire_dimmers'),
     path('luminaires/', views.luminaire_list_with_dimmers, name='luminaire_list_with_dimmers'),
     path('dimmer-test/', views.dimmer_test_view, name='dimmer_test_view'),
+    path('dimmers/', views.dimmer_list, name='dimmer-list'),
     # Add this line
 ]

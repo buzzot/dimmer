@@ -3,6 +3,10 @@ from .models import Luminaire, Dimmer,  DimmerTest
 from .forms import LuminaireForm, DimmerTestForm
 from django.db import IntegrityError
 
+from django.http import JsonResponse, HttpResponseBadRequest
+
+from datetime import datetime
+
 # Main page displaying the list of luminaires and form for adding new luminaires
 def main_page(request):
     luminaires = Luminaire.objects.all()
@@ -13,7 +17,6 @@ def main_page(request):
         return redirect('main_page')
 
     return render(request, 'main_page.html', {'luminaires': luminaires, 'form': form})
-
 
 
 def add_compatibility(request, luminaire_id):
@@ -39,7 +42,7 @@ def add_compatibility(request, luminaire_id):
                 compatibility_status = False  # Default to False if no test exists
 
             # Ensure that compatibility entry exists
-            compatibility, created = DimmerCompatibility.objects.get_or_create(
+            compatibility, created = DimmerTest.objects.get_or_create(
                 luminaire=luminaire,
                 dimmer=dimmer
             )
@@ -69,7 +72,7 @@ def add_compatibility(request, luminaire_id):
 
 # Display all compatibility records
 def compatibility_list(request):
-    compatibilities = DimmerCompatibility.objects.select_related('luminaire', 'dimmer').all()
+    compatibilities = DimmerTest.objects.select_related('luminaire', 'dimmer').all()
     return render(request, 'compatibility_list.html', {'compatibilities': compatibilities})
 
 
@@ -87,7 +90,7 @@ def test_compatibility(request, luminaire_id):
 # Show test results for a luminaire
 def compatibility_result(request, luminaire_id):
     luminaire = get_object_or_404(Luminaire, id=luminaire_id)
-    compatibility_results = DimmerCompatibility.objects.filter(luminaire=luminaire)
+    compatibility_results = DimmerTest.objects.filter(luminaire=luminaire)
 
     return render(request, 'compatibility_result.html', {
         'luminaire': luminaire,
@@ -126,82 +129,60 @@ def luminaire_list_with_dimmers(request):
         'luminaire_data': luminaire_data
     })
 
-def dimmer_test_create(request):
-    if request.method == 'POST':
-        # Get the selected luminaire and production date
-        luminaire_id = request.POST.get('luminaire')
-        luminaire_production_date = request.POST.get('luminaire_production_date')
-        light_level = int(request.POST.get('light_level'))
-        luminaire = Luminaire.objects.get(id=luminaire_id)
-
-        # Fetch all dimmers related to the selected luminaire
 
 
-        compatible_dimmers = Dimmer.objects.filter(dimming_protocol=luminaire.dimming_protocol)
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Luminaire, Dimmer, DimmerTest
 
-        # Collect DimmerTest data for rendering
-        dimmer_tests = []
-        for dimmer in compatible_dimmers:
-            dimmer_tests.append({
-                'dimmer': dimmer,
-                'brand': dimmer.brand,
-                'wattage': dimmer.max_power,
-                'number_of_luminaries': 1,  # Default to 1, can be updated in the form
-                'light_level': light_level,
-                'visual_flicker': False,
-                'ghosting': False,
-                'turnon_time': False,
-                'popon_light': False,
-                'popcorn': False,
-                'dimmer_noise': False,
-                'fixture_noise': False,
-                'breaker_noise': False,
-                'compatibility_status': False
-            })
+def create_dimmer_test(request):
+    luminaires = Luminaire.objects.all()
+    dimmers = Dimmer.objects.all()
 
-        return render(request, 'dimmer_test_create.html', {
-            'luminaire': luminaire,
-            'dimmer_tests': dimmer_tests,
-            'luminaire_production_date': luminaire_production_date
-        })
+    if request.method == "POST":
+        # Get the selected luminaire and dimmer
+        luminaire_id = request.POST.get("luminaire")
+        dimmer_model = request.POST.get("dimmer")
+        luminaire = get_object_or_404(Luminaire, id=luminaire_id)
+        dimmer = get_object_or_404(Dimmer, model=dimmer_model)
 
-    else:
-        luminaires = Luminaire.objects.all()
-        return render(request, 'select_luminaire.html', {'luminaires': luminaires})
+        # Get other form data (assuming these fields exist in the form)
+        luminaire_production_date = request.POST.get("luminaire_production_date")
+        light_level = int(request.POST.get("light_level"))
+        number_of_luminaries = int(request.POST.get("number_of_luminaries"))
+        max_lux = int(request.POST.get("max_lux"))
+        min_lux = int(request.POST.get("min_lux"))
+
+        # Create or update the test record
+        test, created = DimmerTest.objects.get_or_create(
+            luminaire=luminaire,
+            dimmer=dimmer,
+            luminaire_production_date=luminaire_production_date,
+            defaults={
+                "light_level": light_level,
+                "number_of_luminaries": number_of_luminaries,
+                "max_lux": max_lux,
+                "min_lux": min_lux,
+            }
+        )
+
+        # Update test fields if it already exists
+        if not created:
+            test.light_level = light_level
+            test.number_of_luminaries = number_of_luminaries
+            test.max_lux = max_lux
+            test.min_lux = min_lux
+            test.save()
+
+        # Redirect to the success page after the test is saved
+        return redirect('success_page')
+
+    return render(request, "dimmer_test.html", {
+        "luminaires": luminaires,
+        "dimmers": dimmers,
+    })
 
 
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse
-from .models import DimmerTest, Luminaire, Dimmer
 
-
-# def dimmer_test_view(request):
-#     # Get all luminaires and dimmers
-#     luminaires = Luminaire.objects.all()
-#     dimmers = Dimmer.objects.all()
-#
-#     selected_luminaire = None
-#     selected_dimmer_number = None
-#
-#     # Handle Luminaire Selection
-#     if request.method == "POST":
-#         if 'luminaire' in request.POST:
-#             selected_luminaire = Luminaire.objects.get(id=request.POST['luminaire'])
-#         elif 'select_dimmer' in request.POST:
-#             selected_dimmer_number = request.POST['select_dimmer']
-#
-#     # Fetch all tests for the selected luminaire and dimmer if any
-#     tests = []
-#     if selected_luminaire and selected_dimmer_number:
-#         tests = DimmerTest.objects.filter(luminaire=selected_luminaire, dimmer__model=selected_dimmer_number)
-#
-#     return render(request, 'dimmer_test.html', {
-#         'luminaires': luminaires,
-#         'dimmers': dimmers,
-#         'selected_luminaire': selected_luminaire,
-#         'selected_dimmer_number': selected_dimmer_number,
-#         'tests': tests,
-#     })
 
 def dimmer_test_view(request):
     luminaires = Luminaire.objects.all()  # Get all luminaires for selection
@@ -272,3 +253,6 @@ def dimmer_test_view(request):
         "completed_tests": completed_tests,
         "tests": existing_tests if "generate_test" in request.POST else None,
     })
+def dimmer_list(request):
+    dimmers = Dimmer.objects.all()  # Fetch all dimmers
+    return render(request, 'all_dimmers.html', {'dimmers': dimmers})

@@ -1,177 +1,57 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Dimmer Test System</title>
+{% extends "base.html" %}
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
+{% block content %}
 
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="#">Dimmer Test System</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Tests</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Reports</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
 
-    <!-- Main Content -->
-    <div class="container my-4">
-        <h2>Dimmer Compatibility Test</h2>
-
-        <!-- Luminaire Selection Form -->
-        <form method="POST">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label for="luminaire" class="form-label">Select Luminaire:</label>
-                <select name="luminaire" id="luminaire" class="form-select" required>
-                    <option value="">-- Select --</option>
-                    {% for luminaire in luminaires %}
-                        <option value="{{ luminaire.id }}" {% if luminaire.id == selected_luminaire.id %}selected{% endif %}>
-                            {{ luminaire.product_name }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label for="luminaire_production_date" class="form-label">Production Date:</label>
-                <input type="date" name="luminaire_production_date" class="form-control" required>
-            </div>
-
-        {% if selected_luminaire %}
-            <h3 class="mt-4">Select a Dimmer (Compatible with {{ selected_luminaire.product_name }}):</h3>
-            <form method="POST">
-                {% csrf_token %}
-                <div class="list-group">
-                    {% for dimmer in dimmers %}
-                        <button type="submit" name="select_dimmer" value="{{ dimmer.model }}" class="list-group-item list-group-item-action{% if dimmer.model in completed_tests or selected_dimmer_number %} disabled{% endif %}">
-                            {{ dimmer.model }}
-                        </button>
-                    {% empty %}
-                        <p>No compatible dimmers available for this luminaire.</p>
-                    {% endfor %}
-                </div>
-            </form>
-        {% endif %}
-
-        {% if not selected_dimmer_number %}
-    <h3>Select a Dimmer:</h3>
-    <div class="list-group">
-        {% for dimmer in dimmers %}
-            <button
-                type="submit"
-                name="select_dimmer"
-                value="{{ dimmer.model }}"
-                class="list-group-item list-group-item-action {% if dimmer.model in completed_tests %}disabled{% endif %}">
-                {{ dimmer.model }}
-            </button>
-        {% endfor %}
-    </div>
-{% endif %}
-
-{% if selected_dimmer_number %}
-    <h3>Testing Dimmer: {{ selected_dimmer_number }}</h3>
-    <form method="POST">
-        {% csrf_token %}
-        <input type="hidden" name="selected_dimmer" value="{{ selected_dimmer_number }}">
-
-        <!-- Fields for test data -->
-        <div class="mb-3">
-            <label for="number_of_luminaries" class="form-label">Number of Luminaries:</label>
-            <input type="number" name="number_of_luminaries" class="form-control" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="max_lux" class="form-label">Max Lux:</label>
-            <input type="number" name="max_lux" class="form-control" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="min_lux" class="form-label">Min Lux:</label>
-            <input type="number" name="min_lux" class="form-control" required>
-        </div>
-
-        <!-- Checkbox fields for issues -->
-        <div class="form-check">
-            <input type="checkbox" name="visual_flicker" class="form-check-input">
-            <label class="form-check-label">Visual Flicker</label>
-        </div>
-        <!-- Add other checkbox fields similarly -->
-
-        <button type="submit" name="submit_test" class="btn btn-success mt-3">Submit Test</button>
-    </form>
-{% endif %}
-
-        {% if tests %}
-            <h3 class="mt-4">Dimmer Test Results</h3>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Dimmer Number</th>
-                        <th>Dimmer Model</th>
-                        <th>Number of Luminaries</th>
-                        <th>Max Lux</th>
-                        <th>Min Lux</th>
-                        <th>Min Dimming Level</th>
-                        <th>High Dimming Level</th>
-                        <th>Low Dimming Level</th>
-                        <th>Visual Flicker</th>
-                        <th>Ghosting</th>
-                        <th>Turn-on Time</th>
-                        <th>Pop-on Light</th>
-                        <th>Popcorn Effect</th>
-                        <th>Dimmer Noise</th>
-                        <th>Fixture Noise</th>
-                        <th>Breaker Noise</th>
-                        <th>Compatibility</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for test in tests %}
-                    <tr>
-                        <td>{{ test.dimmer_number }}</td>
-                        <td>{{ test.dimmer.model }}</td>
-                        <td>{{ test.number_of_luminaries }}</td>
-                        <td>{{ test.max_lux }}</td>
-                        <td>{{ test.min_lux }}</td>
-                        <td>{{ test.min_dimming_level|floatformat:2 }}%</td>
-                        <td>{{ test.high_dimming_level|floatformat:2 }}%</td>
-                        <td>{{ test.low_dimming_level|floatformat:2 }}%</td>
-                        <td>{{ test.visual_flicker|yesno:"✔,✘" }}</td>
-                        <td>{{ test.ghosting|yesno:"✔,✘" }}</td>
-                        <td>{{ test.turnon_time|yesno:"✔,✘" }}</td>
-                        <td>{{ test.popon_light|yesno:"✔,✘" }}</td>
-                        <td>{{ test.popcorn|yesno:"✔,✘" }}</td>
-                        <td>{{ test.dimmer_noise|yesno:"✔,✘" }}</td>
-                        <td>{{ test.fixture_noise|yesno:"✔,✘" }}</td>
-                        <td>{{ test.breaker_noise|yesno:"✔,✘" }}</td>
-                        <td>{% if test.compatibility_status %}✔ Passed{% else %}✘ Failed{% endif %}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
+<form method="POST">
+    {% csrf_token %}
+    
+    <div class="mb-3">
+        <label for="luminaire" class="form-label">Select Luminaire:</label>
+        <select name="luminaire" id="luminaire" class="form-select" required>
+            <option value="">-- Select --</option>
+            {% for luminaire in luminaires %}
+                <option value="{{ luminaire.id }}" {% if luminaire.id == selected_luminaire.id %}selected{% endif %}>{{ luminaire.product_name }}</option>
+            {% endfor %}
+        </select>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer mt-4 text-center">
-        <p>&copy; 2025 Dimmer Testing System</p>
-    </footer>
+    <div class="mb-3">
+        <label for="luminaire_production_date" class="form-label">Production Date:</label>
+        <input type="date" name="luminaire_production_date" class="form-control" required>
+    </div>
 
-    <!-- Bootstrap JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    <div class="mb-3">
+        <label for="light_level" class="form-label">Light Level:</label>
+        <input type="number" name="light_level" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="number_of_luminaries" class="form-label">Number of Luminaries:</label>
+        <input type="number" name="number_of_luminaries" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="max_lux" class="form-label">Max Lux:</label>
+        <input type="number" name="max_lux" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="min_lux" class="form-label">Min Lux:</label>
+        <input type="number" name="min_lux" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="dimmer" class="form-label">Select Dimmer:</label>
+        <select name="dimmer" id="dimmer" class="form-select" required>
+            <option value="">-- Select --</option>
+            {% for dimmer in dimmers %}
+                <option value="{{ dimmer.model }}">{{ dimmer.model }} - {{ dimmer.brand }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success">Submit Test</button>
+</form>
+
+{% endblock %}

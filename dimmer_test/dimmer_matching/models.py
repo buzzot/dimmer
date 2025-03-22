@@ -12,7 +12,7 @@ class Luminaire(models.Model):
     ]
 
     creation_date = models.DateTimeField(auto_now_add=True)
-    product_name = models.CharField(max_length=255)
+    product_name = models.CharField(unique=True,max_length=255)
     max_power = models.FloatField()  # Added max_power field to store the maximum power (in watts)
 
     dimming_protocol = models.CharField(max_length=100, choices=[
@@ -31,7 +31,7 @@ class Dimmer(models.Model):
     dim_number = models.IntegerField(blank=True, null=True)
     brand = models.CharField(max_length=255)
     series = models.CharField(max_length=255)
-    model = models.CharField(max_length=255)
+    model = models.CharField(unique=True, max_length=255)
     dimming_protocol = models.CharField(max_length=200, choices=[
         ('ELV', 'ELV'),
         ('Triac', 'Triac'),
@@ -48,7 +48,7 @@ class Dimmer(models.Model):
 class DimmerTest(models.Model):
     report_date = models.DateTimeField(auto_now_add=True)  # Auto-set current date
     luminaire = models.ForeignKey(Luminaire, on_delete=models.CASCADE)
-    luminaire_production_date = models.DateTimeField()
+    luminaire_production_date = models.DateField()
     light_level = models.IntegerField()
     dimmer = models.ForeignKey(Dimmer, on_delete=models.CASCADE)
 
@@ -90,13 +90,18 @@ class DimmerTest(models.Model):
         """Determine compatibility based on issue tests."""
 
         # Check the additional dimming level conditions
-        dimming_level_check = self.low_dimming_level > 10 and self.high_dimming_level > 80
+        def calculate_compatibility(self):
+            """Determine compatibility based on issue tests and dimming levels."""
 
-        self.compatibility_status = all([
-            self.visual_flicker, self.ghosting, self.turnon_time,
-            self.popon_light, self.popcorn, self.dimmer_noise,
-            self.fixture_noise, self.breaker_noise
-        ])
+            # Check the dimming level conditions
+            dimming_level_check = self.low_dimming_level > 10 and self.high_dimming_level > 80
+
+            # Compatibility is True only if dimming level conditions are met and all issue tests are True
+            self.compatibility_status = dimming_level_check and all([
+                self.visual_flicker, self.ghosting, self.turnon_time,
+                self.popon_light, self.popcorn, self.dimmer_noise,
+                self.fixture_noise, self.breaker_noise
+            ])
 
     def save(self, *args, **kwargs):
         """Auto-set compatibility status before saving."""

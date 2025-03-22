@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+
+<h2 class="my-4">All Dimmers</h2>
+
+<!-- Table with Bootstrap classes -->
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Brand</th>
+            <th>Series</th>
+            <th>Model</th>
+            <th>Dimming Protocol</th>
+            <th>Max Power</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        {% for dimmer in dimmers %}
+        <tr>
+            <td>{{ dimmer.dim_number }}</td>
+            <td>{{ dimmer.brand }}</td>
+            <td>{{ dimmer.series }}</td>
+            <td><a href="{{ dimmer.manufacturer_url }}">  {{ dimmer.model }}</a></td>
+            <td>{{ dimmer.dimming_protocol }}</td>
+            <td>{{ dimmer.max_power }}</td>
+
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}
