@@ -18,7 +18,8 @@ class Luminaire(models.Model):
     dimming_protocol = models.CharField(max_length=100, choices=[
         ('ELV', 'ELV'),
         ('Triac', 'Triac'),
-        ('0-10V', '0-10V')
+        ('0-10V', '0-10V'),
+        ('Triac & 0-10V', 'Triac & 0-10V'),
     ])
     manufacturer_url = models.URLField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Not Tested')  # Add status field
@@ -39,6 +40,8 @@ class Dimmer(models.Model):
     ])
     manufacturer_url = models.URLField(blank=True, null=True)
     max_power = models.IntegerField(blank=True, null=True)
+    dim_img = models.URLField(blank=True, null=True)
+
 
     def __str__(self):
         return f"{self.brand} {self.model} ({self.dimming_protocol})"
@@ -48,14 +51,14 @@ class Dimmer(models.Model):
 class DimmerTest(models.Model):
     report_date = models.DateTimeField(auto_now_add=True)  # Auto-set current date
     luminaire = models.ForeignKey(Luminaire, on_delete=models.CASCADE)
-    luminaire_production_date = models.DateField()
-    light_level = models.IntegerField()
+    luminaire_production_date = models.DateField(blank=True, null=True)
+    light_level = models.IntegerField(blank=True, null=True)
     dimmer = models.ForeignKey(Dimmer, on_delete=models.CASCADE)
 
     compatibility_status = models.BooleanField(default=False)
-    number_of_luminaries = models.IntegerField()
-    max_lux = models.IntegerField()
-    min_lux = models.IntegerField()
+    number_of_luminaries = models.IntegerField(blank=True, null=True)
+    max_lux = models.IntegerField(blank=True, null=True)
+    min_lux = models.IntegerField(blank=True, null=True)
 
     # Issue Tests
     visual_flicker = models.BooleanField(default=False)

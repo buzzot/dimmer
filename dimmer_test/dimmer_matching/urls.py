@@ -13,5 +13,6 @@ urlpatterns = [
     path('luminaires/', views.luminaire_list_with_dimmers, name='luminaire_list_with_dimmers'),
     path('dimmer-test/', views.dimmer_test_view, name='dimmer_test_view'),
     path('dimmers/', views.dimmer_list, name='dimmer-list'),
+    path('luminaires/<int:luminaire_id>/add-compatibility/', views.add_compatibility, name='add_compatibility'),
     # Add this line
 ]

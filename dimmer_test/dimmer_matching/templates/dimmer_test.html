@@ -2,56 +2,94 @@
 
 {% block content %}
 
-
 <form method="POST">
     {% csrf_token %}
     
-    <div class="mb-3">
-        <label for="luminaire" class="form-label">Select Luminaire:</label>
-        <select name="luminaire" id="luminaire" class="form-select" required>
+    <!-- Luminaire Selection -->
+    <div class="form-group">
+        <label for="luminaire">Select Luminaire:</label>
+        <select name="luminaire" id="luminaire" class="form-control">
             <option value="">-- Select --</option>
             {% for luminaire in luminaires %}
-                <option value="{{ luminaire.id }}" {% if luminaire.id == selected_luminaire.id %}selected{% endif %}>{{ luminaire.product_name }}</option>
+                <option value="{{ luminaire.id }}" {% if selected_luminaire and selected_luminaire.id == luminaire.id %}selected{% endif %}>{{ luminaire.product_name }}</option>
             {% endfor %}
         </select>
     </div>
 
-    <div class="mb-3">
-        <label for="luminaire_production_date" class="form-label">Production Date:</label>
-        <input type="date" name="luminaire_production_date" class="form-control" required>
-    </div>
-
-    <div class="mb-3">
-        <label for="light_level" class="form-label">Light Level:</label>
-        <input type="number" name="light_level" class="form-control" required>
-    </div>
-
-    <div class="mb-3">
-        <label for="number_of_luminaries" class="form-label">Number of Luminaries:</label>
-        <input type="number" name="number_of_luminaries" class="form-control" required>
-    </div>
-
-    <div class="mb-3">
-        <label for="max_lux" class="form-label">Max Lux:</label>
-        <input type="number" name="max_lux" class="form-control" required>
-    </div>
-
-    <div class="mb-3">
-        <label for="min_lux" class="form-label">Min Lux:</label>
-        <input type="number" name="min_lux" class="form-control" required>
-    </div>
-
-    <div class="mb-3">
-        <label for="dimmer" class="form-label">Select Dimmer:</label>
-        <select name="dimmer" id="dimmer" class="form-select" required>
+    <!-- Dimmer Selection -->
+    <div class="form-group">
+        <label for="dimmer">Select Dimmer:</label>
+        <select name="dimmer" id="dimmer" class="form-control">
             <option value="">-- Select --</option>
             {% for dimmer in dimmers %}
-                <option value="{{ dimmer.model }}">{{ dimmer.model }} - {{ dimmer.brand }}</option>
+                <option value="{{ dimmer.id }}" {% if selected_dimmer and selected_dimmer.id == dimmer.id %}selected{% endif %}>{{ dimmer.model }}</option>
             {% endfor %}
         </select>
     </div>
 
-    <button type="submit" class="btn btn-success">Submit Test</button>
+    <!-- Luminaire Production Date -->
+    <div class="form-group">
+        <label for="luminaire_production_date">Luminaire Production Date:</label>
+        <input type="date" name="luminaire_production_date" id="luminaire_production_date" class="form-control" required>
+    </div>
+
+    <!-- Light Level -->
+    <div class="form-group">
+        <label for="light_level">Light Level:</label>
+        <input type="number" name="light_level" id="light_level" class="form-control" required>
+    </div>
+
+    <!-- Number of Luminaries -->
+    <div class="form-group">
+        <label for="number_of_luminaries">Number of Luminaries:</label>
+        <input type="number" name="number_of_luminaries" id="number_of_luminaries" class="form-control" required>
+    </div>
+
+    <!-- Lux Values -->
+    <div class="form-group">
+        <label for="max_lux">Max Lux:</label>
+        <input type="number" name="max_lux" id="max_lux" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="min_lux">Min Lux:</label>
+        <input type="number" name="min_lux" id="min_lux" class="form-control" required>
+    </div>
+
+    <!-- Issue Tests -->
+    <div class="form-group">
+        <label for="visual_flicker">Visual Flicker:</label>
+        <input type="checkbox" name="visual_flicker" id="visual_flicker">
+    </div>
+    <div class="form-group">
+        <label for="ghosting">Ghosting:</label>
+        <input type="checkbox" name="ghosting" id="ghosting">
+    </div>
+    <div class="form-group">
+        <label for="turnon_time">Turn-on Time:</label>
+        <input type="checkbox" name="turnon_time" id="turnon_time">
+    </div>
+    <div class="form-group">
+        <label for="popon_light">Pop-on Light:</label>
+        <input type="checkbox" name="popon_light" id="popon_light">
+    </div>
+    <div class="form-group">
+        <label for="popcorn">Popcorn:</label>
+        <input type="checkbox" name="popcorn" id="popcorn">
+    </div>
+    <div class="form-group">
+        <label for="dimmer_noise">Dimmer Noise:</label>
+        <input type="checkbox" name="dimmer_noise" id="dimmer_noise">
+    </div>
+    <div class="form-group">
+        <label for="fixture_noise">Fixture Noise:</label>
+        <input type="checkbox" name="fixture_noise" id="fixture_noise">
+    </div>
+    <div class="form-group">
+        <label for="breaker_noise">Breaker Noise:</label>
+        <input type="checkbox" name="breaker_noise" id="breaker_noise">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit Test</button>
 </form>
 
 {% endblock %}

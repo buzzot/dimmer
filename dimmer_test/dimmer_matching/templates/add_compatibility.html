@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-
 <div class="container mt-5">
-    <h1 class="text-center mb-4">Add Compatibility for {{ luminaire.product_name }}</h1>
+    <h1 class="text-center mb-4">Add Compatibility for {{ luminaire.product_name }} </h1>
+
+    <p class="text-center">
+        <strong>Dimming Protocol:</strong> {{ luminaire.dimming_protocol }}
+    </p>
 
     <form method="POST">
         {% csrf_token %}
@@ -13,12 +15,13 @@
                 <tr>
                     <th>Dimmer Brand</th>
                     <th>Dimmer Model</th>
-                    <th>Min Luminaires (Luminaire)</th>
-                    <th>Max Luminaires (Luminaire)</th>
-                    <th>Min Dimming Percentage (Luminaire)</th>
-                    <th>Max Dimming Percentage (Luminaire)</th>
-                    <th>Low End Start Time (Luminaire)</th>
-                    <th>Visual Test (Luminaire)</th>
+                    <th>Min Luminaires</th>
+                    <th>Max Luminaires</th>
+                    <th>Min Dimming %</th>
+                    <th>Max Dimming %</th>
+                    <th>Low End Start Time</th>
+                    <th>Light Level</th>
+                    <th>Visual Test</th>
                     <th>Criteria Passed</th>
                     <th>Comments</th>
                 </tr>
@@ -26,31 +29,34 @@
             <tbody>
                 {% for dimmer in compatible_dimmers %}
                     <tr>
-                        <td>{{ dimmer.brand }} {{ dimmer.model }}</td>
+                        <td>{{ dimmer.brand }}</td>
                         <td>{{ dimmer.model }}</td>
                         <td>
-                            <input type="number" name="min_luminaires_{{ dimmer.id }}" value="{{ form.min_luminaires.value }}" class="form-control">
+                            <input type="number" name="min_luminaires_{{ dimmer.id }}" class="form-control">
                         </td>
                         <td>
-                            <input type="number" name="max_luminaires_{{ dimmer.id }}" value="{{ form.max_luminaires.value }}" class="form-control">
+                            <input type="number" name="max_luminaires_{{ dimmer.id }}" class="form-control">
                         </td>
                         <td>
-                            <input type="number" name="min_dimming_percentage_{{ dimmer.id }}" value="{{ form.min_dimming_percentage.value }}" class="form-control">
+                            <input type="number" name="min_dimming_percentage_{{ dimmer.id }}" class="form-control">
                         </td>
                         <td>
-                            <input type="number" name="max_dimming_percentage_{{ dimmer.id }}" value="{{ form.max_dimming_percentage.value }}" class="form-control">
+                            <input type="number" name="max_dimming_percentage_{{ dimmer.id }}" class="form-control">
                         </td>
                         <td>
-                            <input type="number" name="low_end_start_time_{{ dimmer.id }}" value="{{ form.low_end_start_time.value }}" class="form-control">
+                            <input type="number" name="low_end_start_time_{{ dimmer.id }}" class="form-control">
                         </td>
                         <td>
-                            <input type="checkbox" name="visual_test_{{ dimmer.id }}" {% if form.visual_test.value == 'on' %}checked{% endif %} class="form-check-input">
+                            <input type="number" name="light_level_{{ dimmer.id }}" class="form-control">
                         </td>
                         <td>
-                            <input type="checkbox" name="criteria_passed_{{ dimmer.id }}" {% if form.criteria_passed.value %}checked{% endif %} class="form-check-input">
+                            <input type="checkbox" name="visual_test_{{ dimmer.id }}" class="form-check-input">
                         </td>
                         <td>
-                            <textarea name="comments_{{ dimmer.id }}" class="form-control">{{ form.comments.value }}</textarea>
+                            <input type="checkbox" name="criteria_passed_{{ dimmer.id }}" class="form-check-input">
+                        </td>
+                        <td>
+                            <textarea name="comments_{{ dimmer.id }}" class="form-control"></textarea>
                         </td>
                     </tr>
                 {% endfor %}
@@ -63,5 +69,4 @@
     <br>
     <a href="{% url 'luminaire_list_with_dimmers' %}" class="btn btn-secondary">Back to Luminaires List</a>
 </div>
-
 {% endblock %}

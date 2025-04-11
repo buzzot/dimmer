@@ -2,8 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Luminaire, Dimmer,  DimmerTest
 from .forms import LuminaireForm, DimmerTestForm
 from django.db import IntegrityError
-
 from django.http import JsonResponse, HttpResponseBadRequest
+from django.contrib import messages
 
 from datetime import datetime
 
@@ -19,55 +19,106 @@ def main_page(request):
     return render(request, 'main_page.html', {'luminaires': luminaires, 'form': form})
 
 
+def to_int(value, default=0):
+    try:
+        return int(value)
+    except (ValueError, TypeError):
+        return default
+
+def to_float(value, default=0.0):
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return default
+
+# def add_compatibility(request, luminaire_id):
+#     # Retrieve the Luminaire object based on the provided id
+#     luminaire = get_object_or_404(Luminaire, id=luminaire_id)
+#
+#     # Filter Dimmer objects based on Luminaire's dimming protocol
+#     compatible_dimmers = Dimmer.objects.filter(dimming_protocol=luminaire.dimming_protocol)
+#
+#     # Get existing tests for this luminaire
+#     existing_tests = DimmerTest.objects.filter(luminaire=luminaire)
+#
+#     if request.method == 'POST':
+#         for dimmer in compatible_dimmers:
+#             # Try to get an existing test for this combination
+#             dimmer_test = existing_tests.filter(dimmer=dimmer).first()
+#
+#             # Determine compatibility status
+#             compatibility_status = dimmer_test.compatibility_status if dimmer_test else False
+#
+#             # Create or update the DimmerTest entry
+#             compatibility, created = DimmerTest.objects.get_or_create(
+#                 luminaire=luminaire,
+#                 dimmer=dimmer
+#             )
+#
+#             # Populate fields from POST data
+#             compatibility.min_luminaires = to_int(request.POST.get(f"min_luminaires_{dimmer.id}"))
+#             compatibility.max_luminaires = to_int(request.POST.get(f"max_luminaires_{dimmer.id}"))
+#             compatibility.min_dimming_percentage = to_float(request.POST.get(f"min_dimming_percentage_{dimmer.id}"))
+#             compatibility.max_dimming_percentage = to_float(request.POST.get(f"max_dimming_percentage_{dimmer.id}"))
+#             compatibility.low_end_start_time = to_float(request.POST.get(f"low_end_start_time_{dimmer.id}"))
+#             compatibility.visual_test = request.POST.get(f"visual_test_{dimmer.id}") == 'on'
+#
+#             # Use compatibility status from earlier (based on existing test)
+#             compatibility.compatibility_status = compatibility_status
+#
+#             # Save to DB
+#             compatibility.save()
+#
+#         # Optional user message
+#         messages.success(request, "Compatibility information has been saved.")
+#
+#         return redirect('luminaire_dimmers', luminaire_id=luminaire.id)
+#
+#     # Render template with data
+#     return render(request, 'add_compatibility.html', {
+#         'luminaire': luminaire,
+#         'compatible_dimmers': compatible_dimmers,
+#         'existing_tests': existing_tests,
+#     })
+
 def add_compatibility(request, luminaire_id):
-    # Retrieve the Luminaire object based on the provided id
     luminaire = get_object_or_404(Luminaire, id=luminaire_id)
+    compatible_dimmers = list(Dimmer.objects.filter(dimming_protocol=luminaire.dimming_protocol))
 
-    # Filter Dimmer objects based on Luminaire's dimming protocol
-    compatible_dimmers = Dimmer.objects.filter(dimming_protocol=luminaire.dimming_protocol)
-
-    # Prioritize using the DimmerTest model
-    existing_tests = DimmerTest.objects.filter(luminaire=luminaire)
-
-    if request.method == 'POST':
-        # Iterate through compatible dimmers to create or update compatibility
-        for dimmer in compatible_dimmers:
-            # Check if a DimmerTest exists for this combination of Luminaire and Dimmer
-            dimmer_test = existing_tests.filter(dimmer=dimmer).first()
-
-            if dimmer_test:
-                # If DimmerTest exists, use it for further logic (e.g., compatibility checks)
-                compatibility_status = dimmer_test.compatibility_status
-            else:
-                compatibility_status = False  # Default to False if no test exists
-
-            # Ensure that compatibility entry exists
-            compatibility, created = DimmerTest.objects.get_or_create(
-                luminaire=luminaire,
-                dimmer=dimmer
-            )
-
-            # Populate fields with data from the POST request
-            compatibility.min_luminaires = request.POST.get(f"min_luminaires_{dimmer.id}", 0)
-            compatibility.max_luminaires = request.POST.get(f"max_luminaires_{dimmer.id}", 0)
-            compatibility.min_dimming_percentage = request.POST.get(f"min_dimming_percentage_{dimmer.id}", 0)
-            compatibility.max_dimming_percentage = request.POST.get(f"max_dimming_percentage_{dimmer.id}", 100)
-            compatibility.low_end_start_time = request.POST.get(f"low_end_start_time_{dimmer.id}", 0)
-            compatibility.visual_test = request.POST.get(f"visual_test_{dimmer.id}") == 'on'
-
-            # Use the compatibility_status from DimmerTest if it exists
-            compatibility.compatibility_status = compatibility_status
-
-            # Save the updated compatibility record
-            compatibility.save()
-
+    # Determine which dimmer we're editing (via ?step=)
+    step = int(request.GET.get('step', 0))
+    if step >= len(compatible_dimmers):
         return redirect('luminaire_dimmers', luminaire_id=luminaire.id)
 
-    return render(request, 'add_compatibility.html', {
+    current_dimmer = compatible_dimmers[step]
+
+    # Try to find existing test
+    dimmer_test, _ = DimmerTest.objects.get_or_create(
+        luminaire=luminaire,
+        dimmer=current_dimmer
+    )
+
+    if request.method == 'POST':
+        dimmer_test.min_luminaires = request.POST.get("min_luminaires", 0)
+        dimmer_test.max_luminaires = request.POST.get("max_luminaires", 0)
+        dimmer_test.min_dimming_percentage = request.POST.get("min_dimming_percentage", 0)
+        dimmer_test.max_dimming_percentage = request.POST.get("max_dimming_percentage", 100)
+        dimmer_test.low_end_start_time = request.POST.get("low_end_start_time", 0)
+        dimmer_test.visual_test = request.POST.get("visual_test") == 'on'
+        dimmer_test.comments = request.POST.get("comments", "")
+        dimmer_test.save()
+
+        # Go to next step
+        return redirect(f"{request.path}?step={step + 1}")
+
+    return render(request, 'add_compatibility_step.html', {
         'luminaire': luminaire,
-        'compatible_dimmers': compatible_dimmers,
-        'existing_tests': existing_tests  # Pass existing DimmerTests to the template
+        'dimmer': current_dimmer,
+        'step': step,
+        'total': len(compatible_dimmers),
+        'dimmer_test': dimmer_test,
     })
+
 
 
 # Display all compatibility records
@@ -152,6 +203,9 @@ def create_dimmer_test(request):
         max_lux = int(request.POST.get("max_lux"))
         min_lux = int(request.POST.get("min_lux"))
 
+        print("Form submitted")
+        # Check if data is correctly passed to the view
+        print(request.POST)
         # Create or update the test record
         test, created = DimmerTest.objects.get_or_create(
             luminaire=luminaire,

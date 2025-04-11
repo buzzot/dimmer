@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <h2 class="mb-4 text-center" style="color: #004013">Luminaire {{ luminaire.product_name }}</h2>
+    <h4 class="mb-4 text-center">
+        Dimmer #{{ dimmer.dim_number }} ({{ step|add:1 }} of {{ total }}) —
+        <strong style="color: crimson">{{ dimmer.brand }} {{ dimmer.model }}</strong>
+        ({{ luminaire.dimming_protocol }})
+    </h4>
+
+    {% if dimmer.dim_img_url %}
+        <img src="{{ dimmer.dim_img_url }}" alt="Dimmer Image" class="img-fluid mb-3">
+    {% endif %}
+<div class="container-sm">
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- Step 1: Product Date and Light Level Fields (Placed at the top) -->
+        <div class="alert alert-info">
+            <h5 class="text-center">Step 1: Basic Information</h5>
+            <p class="text-center">Please start by entering the product date and light level for the dimmer.</p>
+        </div>
+
+        <div class="mb-3">
+            <label for="product_date" class="form-label">Product Date</label>
+            <input type="date" id="product_date" name="product_date" value="{{ dimmer_test.product_date }}" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="light_level" class="form-label">Light Level</label>
+            <input type="number" id="light_level" name="light_level" value="{{ dimmer_test.light_level }}" class="form-control" required>
+        </div>
+
+        <!-- Step 2: Existing Form Fields -->
+        <div class="mb-3">
+            <label for="min_luminaires" class="form-label">Min Luminaires</label>
+            <input type="number" id="min_luminaires" name="min_luminaires" value="{{ dimmer_test.min_luminaires }}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="max_luminaires" class="form-label">Max Luminaires</label>
+            <input type="number" id="max_luminaires" name="max_luminaires" value="{{ dimmer_test.max_luminaires }}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="min_dimming_percentage" class="form-label">Min Dimming %</label>
+            <input type="number" id="min_dimming_percentage" name="min_dimming_percentage" value="{{ dimmer_test.min_dimming_percentage }}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="max_dimming_percentage" class="form-label">Max Dimming %</label>
+            <input type="number" id="max_dimming_percentage" name="max_dimming_percentage" value="{{ dimmer_test.max_dimming_percentage }}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="low_end_start_time" class="form-label">Low End Start Time</label>
+            <input type="number" id="low_end_start_time" name="low_end_start_time" value="{{ dimmer_test.low_end_start_time }}" class="form-control">
+        </div>
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="visual_test" name="visual_test" {% if dimmer_test.visual_test %}checked{% endif %}>
+            <label class="form-check-label" for="visual_test">Visual Test Passed</label>
+        </div>
+        <div class="mb-3">
+            <label for="comments" class="form-label">Comments</label>
+            <textarea id="comments" name="comments" class="form-control">{{ dimmer_test.comments }}</textarea>
+        </div>
+
+        <!-- Submit button -->
+        <button type="submit" class="btn btn-primary">
+            {% if step|add:1 == total %}Finish{% else %}Next{% endif %}
+        </button>
+    </form>
+
+    <br>
+    <a href="{% url 'luminaire_list_with_dimmers' %}" class="btn btn-secondary">Cancel</a>
+</div>
+</div>
+{% endblock %}
